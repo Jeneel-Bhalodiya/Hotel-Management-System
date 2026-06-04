@@ -5,13 +5,13 @@ export default function RoleSelector({
     return (
         <div className="flex bg-slate-800 rounded-xl p-1">
             <button
-                onClick={() => setRole("admin")}
-                className={`flex-1 py-2 rounded-lg transition-all ${role === "admin"
+                onClick={() => setRole("owner")}
+                className={`flex-1 py-2 rounded-lg transition-all ${role === "owner"
                     ? "bg-amber-500 text-black"
                     : "text-white"
                 }`}
             >
-                Admin
+                Owner
             </button>
 
             <button

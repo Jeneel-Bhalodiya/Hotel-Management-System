@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 export default function Signup() {
-    const [role, setRole] = useState("employee");
+    const [role, setRole] = useState("owner");
 
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");

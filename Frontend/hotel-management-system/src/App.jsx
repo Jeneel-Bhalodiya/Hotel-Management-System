@@ -6,6 +6,9 @@ import {
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import HotelSetup from "./pages/HotelSetup";
+import AdminDashboard from "./pages/AdminDashboard";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
 
 function App() {
   return (
@@ -18,6 +21,18 @@ function App() {
         <Route
           path="/signup"
           element={<Signup />}
+        />
+        <Route
+          path="/hotel-setup"
+          element={<HotelSetup />}
+        />
+        <Route 
+          path="/admin" 
+          element={<AdminDashboard />} 
+        />
+        <Route  
+          path="/employee" 
+          element={<EmployeeDashboard />}   
         />
       </Routes>
     </BrowserRouter>
