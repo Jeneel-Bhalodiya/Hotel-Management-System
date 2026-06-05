@@ -1,32 +1,24 @@
 import { useState } from "react";
 import AnimatedBackground from "../components/AnimatedBackground";
-import RoleSelector from "../components/RoleSelector";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-    const [role, setRole] = useState("admin");
-
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    const [apiError, setApiError] = useState("");
+    const navigate = useNavigate();
 
     const validateForm = () => {
         let newErrors = {};
 
-        if (!email.trim()) {
-            newErrors.email = "Email is required";
-        } else if (
-            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
-        ) {
-            newErrors.email = "Invalid email address";
+        if (!username.trim()) {
+            newErrors.username = "Username is required";
         }
 
         if (!password.trim()) {
             newErrors.password = "Password is required";
-        } else if (password.length < 6) {
-            newErrors.password =
-                "Password must be at least 6 characters";
         }
 
         setErrors(newErrors);
@@ -34,10 +26,33 @@ export default function Login() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
+        setApiError("");
 
         if (validateForm()) {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem("access_token", data.access);
+                    localStorage.setItem("refresh_token", data.refresh);
+                    localStorage.setItem("user", JSON.stringify(data.user));
+                    navigate("/dashboard");
+                } else {
+                    setApiError(data.detail || "Login failed. Please check your credentials.");
+                }
+            } catch (error) {
+                setApiError("Network error. Please try again later.");
+            }
         }
     };
 
@@ -58,35 +73,34 @@ export default function Login() {
                     Welcome Back!!
                 </p>
 
-                <div className="mt-6">
-                    <RoleSelector
-                        role={role}
-                        setRole={setRole}
-                    />
-                </div>
-
                 <form
                     onSubmit={handleLogin}
                     className="space-y-4 mt-6"
                 >
+                    {apiError && (
+                        <div className="p-3 bg-red-500/20 border border-red-500 rounded-xl text-red-500 text-sm text-center">
+                            {apiError}
+                        </div>
+                    )}
+                    
                     <div>
                         <input
                             type="text"
-                            placeholder="Email"
-                            value={email}
+                            placeholder="Username"
+                            value={username}
                             onChange={(e) =>
-                                setEmail(e.target.value)
+                                setUsername(e.target.value)
                             }
                             className={`w-full p-3 rounded-xl bg-slate-900 text-white outline-none border ${
-                                errors.email
+                                errors.username
                                     ? "border-red-500"
                                     : "border-transparent"
                             }`}
                         />
 
-                        {errors.email && (
+                        {errors.username && (
                             <p className="text-red-500 text-sm mt-1">
-                                {errors.email}
+                                {errors.username}
                             </p>
                         )}
                     </div>
@@ -115,9 +129,9 @@ export default function Login() {
 
                     <button
                         type="submit"
-                        className="w-full bg-amber-500 py-3 rounded-xl font-bold hover:bg-amber-400 transition"
+                        className="w-full bg-amber-500 py-3 rounded-xl font-bold hover:bg-amber-400 transition text-slate-900"
                     >
-                        Login as {role}
+                        Login
                     </button>
 
                     <p className="text-center text-gray-400 mt-4">
