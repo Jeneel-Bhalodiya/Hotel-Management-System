@@ -5,9 +5,10 @@ export default function RoleSelector({
     return (
         <div className="flex bg-slate-800 rounded-xl p-1">
             <button
-                onClick={() => setRole("admin")}
-                className={`flex-1 py-2 rounded-lg transition-all ${role === "admin"
-                    ? "bg-amber-500 text-black"
+                type="button"
+                onClick={() => setRole("ADMIN")}
+                className={`flex-1 py-2 rounded-lg transition-all ${role === "ADMIN"
+                    ? "bg-amber-500 text-black font-bold"
                     : "text-white"
                 }`}
             >
@@ -15,13 +16,14 @@ export default function RoleSelector({
             </button>
 
             <button
-                onClick={() => setRole("employee")}
-                className={`flex-1 py-2 rounded-lg transition-all ${role === "employee"
-                    ? "bg-amber-500 text-black"
+                type="button"
+                onClick={() => setRole("WAITER")}
+                className={`flex-1 py-2 rounded-lg transition-all ${role === "WAITER"
+                    ? "bg-amber-500 text-black font-bold"
                     : "text-white"
                 }`}
             >
-                Employee
+                Waiter
             </button>
         </div>
     )
