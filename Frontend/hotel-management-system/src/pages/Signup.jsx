@@ -2,23 +2,25 @@ import { useState } from "react";
 import AnimatedBackground from "../components/AnimatedBackground";
 import RoleSelector from "../components/RoleSelector";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Signup() {
-    const [role, setRole] = useState("owner");
+    const [role, setRole] = useState("WAITER");
 
-    const [fullName, setFullName] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const [errors, setErrors] = useState({});
+    const [apiError, setApiError] = useState("");
+    const navigate = useNavigate();
 
     const validateForm = () => {
         let newErrors = {};
 
-        if (!fullName.trim()) {
-            newErrors.fullName = "Full Name is required";
+        if (!username.trim()) {
+            newErrors.username = "Username is required";
         }
 
         if (!email.trim()) {
@@ -49,10 +51,36 @@ export default function Signup() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
+        setApiError("");
 
         if (validateForm()) {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/auth/register/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        password,
+                        role,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    navigate("/");
+                } else {
+                    const errorMsg = Object.values(data).flat().join(" ") || "Signup failed.";
+                    setApiError(errorMsg);
+                }
+            } catch (error) {
+                setApiError("Network error. Please try again later.");
+            }
         }
     };
 
@@ -63,7 +91,7 @@ export default function Signup() {
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="z-10 w-full max-w-md p-8 backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20"
+                className="z-10 w-full max-w-md p-8 backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 my-8"
             >
                 <h1 className="text-4xl text-white font-bold text-center">
                     Hotel Management
@@ -84,24 +112,30 @@ export default function Signup() {
                     onSubmit={handleSignup}
                     className="space-y-4 mt-6"
                 >
+                    {apiError && (
+                        <div className="p-3 bg-red-500/20 border border-red-500 rounded-xl text-red-500 text-sm text-center">
+                            {apiError}
+                        </div>
+                    )}
+
                     <div>
                         <input
                             type="text"
-                            placeholder="Full Name"
-                            value={fullName}
+                            placeholder="Username"
+                            value={username}
                             onChange={(e) =>
-                                setFullName(e.target.value)
+                                setUsername(e.target.value)
                             }
                             className={`w-full p-3 rounded-xl bg-slate-900 text-white outline-none border ${
-                                errors.fullName
+                                errors.username
                                     ? "border-red-500"
                                     : "border-transparent"
                             }`}
                         />
 
-                        {errors.fullName && (
+                        {errors.username && (
                             <p className="text-red-500 text-sm mt-1">
-                                {errors.fullName}
+                                {errors.username}
                             </p>
                         )}
                     </div>
@@ -176,7 +210,7 @@ export default function Signup() {
 
                     <button
                         type="submit"
-                        className="w-full bg-amber-500 py-3 rounded-xl font-bold hover:bg-amber-400 transition"
+                        className="w-full bg-amber-500 py-3 rounded-xl font-bold hover:bg-amber-400 transition text-slate-900"
                     >
                         Create Account
                     </button>

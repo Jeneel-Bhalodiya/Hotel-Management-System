@@ -12,6 +12,7 @@ import EmployeeDashboard from "./pages/EmployeeDashboard";
 import Tables from "./pages/Tables";
 import Employees from "./pages/Employees";
 import Menu from "./pages/Menu";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -48,6 +49,8 @@ function App() {
         <Route
           path="/admin/menu"
           element={<Menu />}
+          path="/dashboard"
+          element={<Dashboard />}
         />
       </Routes>
     </BrowserRouter>
