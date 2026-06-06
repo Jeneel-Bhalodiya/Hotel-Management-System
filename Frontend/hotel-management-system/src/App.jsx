@@ -9,6 +9,9 @@ import Signup from "./pages/Signup";
 import HotelSetup from "./pages/HotelSetup";
 import AdminDashboard from "./pages/AdminDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
+import Tables from "./pages/Tables";
+import Employees from "./pages/Employees";
+import Menu from "./pages/Menu";
 
 function App() {
   return (
@@ -33,6 +36,18 @@ function App() {
         <Route  
           path="/employee" 
           element={<EmployeeDashboard />}   
+        />
+        <Route
+          path="/admin/tables"
+          element={<Tables />}
+        />
+        <Route
+          path="/admin/employees"
+          element={<Employees />}
+        />  
+        <Route
+          path="/admin/menu"
+          element={<Menu />}
         />
       </Routes>
     </BrowserRouter>
