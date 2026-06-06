@@ -6,6 +6,12 @@ import {
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import HotelSetup from "./pages/HotelSetup";
+import AdminDashboard from "./pages/AdminDashboard";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
+import Tables from "./pages/Tables";
+import Employees from "./pages/Employees";
+import Menu from "./pages/Menu";
 import Dashboard from "./pages/Dashboard";
 
 function App() {
@@ -21,6 +27,28 @@ function App() {
           element={<Signup />}
         />
         <Route
+          path="/hotel-setup"
+          element={<HotelSetup />}
+        />
+        <Route 
+          path="/admin" 
+          element={<AdminDashboard />} 
+        />
+        <Route  
+          path="/employee" 
+          element={<EmployeeDashboard />}   
+        />
+        <Route
+          path="/admin/tables"
+          element={<Tables />}
+        />
+        <Route
+          path="/admin/employees"
+          element={<Employees />}
+        />  
+        <Route
+          path="/admin/menu"
+          element={<Menu />}
           path="/dashboard"
           element={<Dashboard />}
         />

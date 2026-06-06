@@ -12,7 +12,7 @@ export default function RoleSelector({
                     : "text-white"
                 }`}
             >
-                Admin
+                Owner
             </button>
 
             <button

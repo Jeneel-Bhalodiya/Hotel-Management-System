@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import AnimatedBackground from "../components/AnimatedBackground";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -63,7 +65,8 @@ export default function Login() {
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="z-10 w-full max-w-md p-8 backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20"
+                transition={{ duration: 0.5 }}
+                className="z-10 w-full max-w-md p-8 backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl"
             >
                 <h1 className="text-4xl text-white font-bold text-center">
                     Hotel Management
@@ -105,6 +108,7 @@ export default function Login() {
                         )}
                     </div>
 
+                    {/* Password */}
                     <div>
                         <input
                             type="password"
@@ -113,7 +117,7 @@ export default function Login() {
                             onChange={(e) =>
                                 setPassword(e.target.value)
                             }
-                            className={`w-full p-3 rounded-xl bg-slate-900 text-white outline-none border ${
+                            className={`w-full p-3 rounded-xl bg-slate-900 text-white outline-none border transition ${
                                 errors.password
                                     ? "border-red-500"
                                     : "border-transparent"
@@ -127,6 +131,7 @@ export default function Login() {
                         )}
                     </div>
 
+                    {/* Login Button */}
                     <button
                         type="submit"
                         className="w-full bg-amber-500 py-3 rounded-xl font-bold hover:bg-amber-400 transition text-slate-900"
@@ -134,11 +139,12 @@ export default function Login() {
                         Login
                     </button>
 
+                    {/* Signup Link */}
                     <p className="text-center text-gray-400 mt-4">
                         Don't have an account?{" "}
                         <Link
                             to="/signup"
-                            className="text-amber-400 hover:text-amber-300"
+                            className="text-amber-400 hover:text-amber-300 font-medium"
                         >
                             Sign Up
                         </Link>
