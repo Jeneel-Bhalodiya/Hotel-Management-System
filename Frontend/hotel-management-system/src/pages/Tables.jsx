@@ -142,13 +142,18 @@ export default function Tables() {
                         </div>
                     </Link>
 
-                    <div className="p-3 rounded-xl hover:bg-slate-800 cursor-pointer">
-                        Online Orders
-                    </div>
-
-                    <div className="p-3 rounded-xl hover:bg-slate-800 cursor-pointer">
-                        Reports
-                    </div>
+                    
+                    <Link to="/admin/orders">
+                        <div className="p-3 rounded-xl hover:bg-slate-800 cursor-pointer">
+                            Online Orders
+                        </div>
+                    </Link>
+                    
+                    <Link to="/admin/reports">
+                        <div className="p-3 rounded-xl hover:bg-slate-800 cursor-pointer">
+                            Reports
+                        </div>
+                    </Link>
 
                 </nav>
             </aside>

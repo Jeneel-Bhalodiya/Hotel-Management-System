@@ -2,8 +2,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import AnimatedBackground from "../components/AnimatedBackground";
-import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
     const [username, setUsername] = useState("");
