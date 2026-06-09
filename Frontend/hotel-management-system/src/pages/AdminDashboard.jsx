@@ -1,8 +1,17 @@
-import { Heater, Users, ShoppingBag, IndianRupee, UserStar, Icon } from "lucide-react";
+import { Users, ShoppingBag, IndianRupee, UserStar, Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { chairsTablePlatter } from "@lucide/lab";
+import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
+  const [tables, setTables] = useState([]);
+
+  useEffect(() => {
+    const savedTables =
+      JSON.parse(localStorage.getItem("tables")) || [];
+      setTables(savedTables);
+  }, []);
+
   const cards = [
   {
     title: "Total Tables",
@@ -55,13 +64,16 @@ export default function AdminDashboard() {
               Manage Menu
             </div>
           </Link>
-          <div className="p-3 rounded-xl hover:bg-slate-800 cursor-pointer">
-            Online Orders
-          </div>
-
-          <div className="p-3 rounded-xl hover:bg-slate-800 cursor-pointer">
-            Reports
-          </div>
+          <Link to="/admin/orders">
+            <div className="p-3 rounded-xl hover:bg-slate-800 cursor-pointer">
+              Online Orders
+            </div>
+          </Link>
+          <Link to="/admin/reports">
+            <div className="p-3 rounded-xl hover:bg-slate-800 cursor-pointer">
+              Reports
+            </div>
+          </Link>
         </nav>
       </aside>
 
@@ -96,8 +108,47 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        <div className="mt-8  rounded-3xl p-6">
-          
+        <div className="mt-8 bg-white/10 backdrop-blur-xl rounded-3xl p-6">
+          <h3 className="text-2xl font-bold mb-6">
+            Restaurant Tables
+          </h3>
+
+          {tables.length === 0 ? (
+            <div className="text-slate-400 text-center py-10">
+              No tables added yet
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6">
+              {tables.map((table) => (
+                <div
+                  key={table.id}
+                  className="bg-slate-900 rounded-2xl p-5 border border-slate-700 hover:border-amber-500 transition"
+                >
+                  <div className="flex justify-center mb-3">
+                    <Icon
+                      iconNode={chairsTablePlatter}
+                      size={40}
+                      className="text-amber-500"
+                    />
+                  </div>
+
+                  <h4 className="text-center text-xl font-bold">
+                    Table {table.tableNo}
+                  </h4>
+
+                  <p className="text-center text-slate-400 mt-2">
+                    Capacity: {table.capacity}
+                  </p>
+
+                  <div className="mt-4">
+                    <span className="w-full block text-center bg-green-500/20 text-green-400 py-2 rounded-lg">
+                      Available
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>

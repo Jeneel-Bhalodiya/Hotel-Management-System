@@ -13,6 +13,8 @@ import Tables from "./pages/Tables";
 import Employees from "./pages/Employees";
 import Menu from "./pages/Menu";
 import Dashboard from "./pages/Dashboard";
+import OnlineOrder from "./pages/OnlineOrder";
+import Reports from "./pages/Reports";
 
 function App() {
   return (
@@ -49,8 +51,18 @@ function App() {
         <Route
           path="/admin/menu"
           element={<Menu />}
+        />
+        <Route
           path="/dashboard"
           element={<Dashboard />}
+        />
+        <Route
+          path="/admin/orders"
+          element={<OnlineOrder />}
+        />
+        <Route
+          path="/admin/reports"
+          element={<Reports />}
         />
       </Routes>
     </BrowserRouter>
