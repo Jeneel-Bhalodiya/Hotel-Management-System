@@ -1,12 +1,9 @@
 import { useState } from "react";
 import AnimatedBackground from "../components/AnimatedBackground";
-import RoleSelector from "../components/RoleSelector";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Signup() {
-    const [role, setRole] = useState("WAITER");
-
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -66,7 +63,7 @@ export default function Signup() {
                         username,
                         email,
                         password,
-                        role,
+                        role: "ADMIN",
                     }),
                 });
 
@@ -100,13 +97,6 @@ export default function Signup() {
                 <p className="text-center text-gray-400 mt-2">
                     Create Account
                 </p>
-
-                <div className="mt-6">
-                    <RoleSelector
-                        role={role}
-                        setRole={setRole}
-                    />
-                </div>
 
                 <form
                     onSubmit={handleSignup}

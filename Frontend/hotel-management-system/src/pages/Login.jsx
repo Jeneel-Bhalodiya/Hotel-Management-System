@@ -46,7 +46,16 @@ export default function Login() {
                     localStorage.setItem("access_token", data.access);
                     localStorage.setItem("refresh_token", data.refresh);
                     localStorage.setItem("user", JSON.stringify(data.user));
-                    navigate("/dashboard");
+                    
+                    if (data.user.role === 'ADMIN') {
+                        if (!data.user.hotel_setup_completed) {
+                            navigate("/hotel-setup");
+                        } else {
+                            navigate("/admin");
+                        }
+                    } else {
+                        navigate("/employee");
+                    }
                 } else {
                     setApiError(data.detail || "Login failed. Please check your credentials.");
                 }
