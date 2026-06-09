@@ -45,17 +45,42 @@ export default function HotelSetup() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!validateForm()) return;
 
-        localStorage.setItem(
-            "hotelSettings",
-            JSON.stringify(formData)
-        );
+        try {
+            const token = localStorage.getItem("access_token");
+            const response = await fetch("http://127.0.0.1:8000/api/auth/hotel-setup/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    hotel_name: formData.hotelName,
+                    hotel_address: formData.hotelAddress,
+                    total_tables: formData.totalTables,
+                    total_employees: formData.totalEmployees
+                }),
+            });
 
-        navigate("/admin");
+            if (response.ok) {
+                // Update local user state
+                const user = JSON.parse(localStorage.getItem("user"));
+                user.hotel_setup_completed = true;
+                localStorage.setItem("user", JSON.stringify(user));
+
+                navigate("/admin");
+            } else {
+                const data = await response.json();
+                console.error("Setup failed:", data);
+                // Optionally handle API errors here
+            }
+        } catch (error) {
+            console.error("Network error:", error);
+        }
     };
 
     return (

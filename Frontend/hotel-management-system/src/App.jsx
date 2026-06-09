@@ -16,53 +16,66 @@ import Dashboard from "./pages/Dashboard";
 import OnlineOrder from "./pages/OnlineOrder";
 import Reports from "./pages/Reports";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route 
-          path="/" 
-          element={<Login />} 
+        {/* Public Routes */}
+        <Route
+          path="/"
+          element={<Login />}
+        />
+        <Route
+          path="/login"
+          element={<Login />}
         />
         <Route
           path="/signup"
           element={<Signup />}
         />
+
+        {/* Protected Admin Routes */}
         <Route
           path="/hotel-setup"
-          element={<HotelSetup />}
+          element={<ProtectedRoute allowedRoles={["ADMIN"]}><HotelSetup /></ProtectedRoute>}
         />
-        <Route 
-          path="/admin" 
-          element={<AdminDashboard />} 
-        />
-        <Route  
-          path="/employee" 
-          element={<EmployeeDashboard />}   
+        <Route
+          path="/admin"
+          element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminDashboard /></ProtectedRoute>}
         />
         <Route
           path="/admin/tables"
-          element={<Tables />}
+          element={<ProtectedRoute allowedRoles={["ADMIN"]}><Tables /></ProtectedRoute>}
         />
         <Route
           path="/admin/employees"
-          element={<Employees />}
-        />  
-        <Route
-          path="/admin/menu"
-          element={<Menu />}
+          element={<ProtectedRoute allowedRoles={["ADMIN"]}><Employees /></ProtectedRoute>}
         />
         <Route
-          path="/dashboard"
-          element={<Dashboard />}
+          path="/admin/menu"
+          element={<ProtectedRoute allowedRoles={["ADMIN"]}><Menu /></ProtectedRoute>}
         />
         <Route
           path="/admin/orders"
-          element={<OnlineOrder />}
+          element={<ProtectedRoute allowedRoles={["ADMIN"]}><OnlineOrder /></ProtectedRoute>}
         />
         <Route
           path="/admin/reports"
-          element={<Reports />}
+          element={<ProtectedRoute allowedRoles={["ADMIN"]}><Reports /></ProtectedRoute>}
+        />
+
+        {/* Protected Employee Route */}
+        <Route
+          path="/employee"
+          element={<ProtectedRoute allowedRoles={["WAITER"]}><EmployeeDashboard /></ProtectedRoute>}
+        />
+
+        {/* General Protected Route */}
+        <Route
+          path="/dashboard"
+          element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
         />
       </Routes>
     </BrowserRouter>
