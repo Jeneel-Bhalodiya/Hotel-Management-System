@@ -1,18 +1,24 @@
+//Import
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+//Export
 export default function HotelSetup() {
+    
+    //Navigate
     const navigate = useNavigate();
 
+    //Form data
     const [formData, setFormData] = useState({
         hotelName: "",
         hotelAddress: "",
         totalTables: "",
-        totalEmployees: "",
     });
 
+    //Error handling
     const [errors, setErrors] = useState({});
 
+    //Handle input change
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -20,6 +26,7 @@ export default function HotelSetup() {
         });
     };
 
+    //Validate form
     const validateForm = () => {
         let newErrors = {};
 
@@ -35,9 +42,6 @@ export default function HotelSetup() {
             newErrors.totalTables = "Total Tables is required";
         }
 
-        if (!formData.totalEmployees) {
-            newErrors.totalEmployees = "Total Employees is required";
-        }
 
 
         setErrors(newErrors);
@@ -45,45 +49,24 @@ export default function HotelSetup() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async (e) => {
+    //Submit form
+    const handleSubmit = (e) => {
         e.preventDefault();
 
+        //If form is not valid, return
         if (!validateForm()) return;
 
-        try {
-            const token = localStorage.getItem("access_token");
-            const response = await fetch("http://127.0.0.1:8000/api/auth/hotel-setup/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    hotel_name: formData.hotelName,
-                    hotel_address: formData.hotelAddress,
-                    total_tables: formData.totalTables,
-                    total_employees: formData.totalEmployees
-                }),
-            });
+        localStorage.setItem(
+            "hotelSettings",
+            JSON.stringify(formData)
+        );
 
-            if (response.ok) {
-                // Update local user state
-                const user = JSON.parse(localStorage.getItem("user"));
-                user.hotel_setup_completed = true;
-                localStorage.setItem("user", JSON.stringify(user));
-
-                navigate("/admin");
-            } else {
-                const data = await response.json();
-                console.error("Setup failed:", data);
-                // Optionally handle API errors here
-            }
-        } catch (error) {
-            console.error("Network error:", error);
-        }
+        navigate("/admin");
     };
 
+    //Render
     return (
+        // Main container
         <div className="min-h-screen bg-slate-950 flex justify-center items-center p-6">
             <div className="w-full max-w-2xl bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8">
                 <h1 className="text-4xl font-bold text-white text-center">
@@ -98,7 +81,7 @@ export default function HotelSetup() {
                     onSubmit={handleSubmit}
                     className="mt-8 space-y-5"
                 >
-                    {/* Hotel Name */}
+                   {/* Hotel Name */}
                     <div>
                         <input
                             type="text"
@@ -148,24 +131,6 @@ export default function HotelSetup() {
                             </p>
                         )}
                     </div>
-
-                    {/* Employees */}
-                    <div>
-                        <input
-                            type="number"
-                            name="totalEmployees"
-                            placeholder="Total Employees"
-                            value={formData.totalEmployees}
-                            onChange={handleChange}
-                            className="w-full p-3 rounded-xl bg-slate-900 text-white"
-                        />
-                        {errors.totalEmployees && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.totalEmployees}
-                            </p>
-                        )}
-                    </div>
-
                     <button
                         type="submit"
                         className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-xl transition"

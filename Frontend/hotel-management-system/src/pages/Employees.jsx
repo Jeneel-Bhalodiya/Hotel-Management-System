@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
+    Pencil,
     Plus,
     Trash2,
     Users,
@@ -15,6 +16,7 @@ export default function Employees() {
     const [salary, setSalary] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [editingId, setEditingId] = useState(null);
 
     const fetchEmployees = async () => {
         try {
@@ -40,7 +42,7 @@ export default function Employees() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!name || !password || !salary) {
+        if (!name || !salary || (!editingId && !password)) {
             setError("Please fill all fields");
             return;
         }
@@ -53,35 +55,61 @@ export default function Employees() {
         setError("");
         setIsLoading(true);
 
+
         try {
             const token = localStorage.getItem("access_token");
-            const response = await fetch("http://127.0.0.1:8000/api/auth/employees/", {
-                method: "POST",
+
+            const url = editingId
+                ? `http://127.0.0.1:8000/api/auth/employees/${editingId}/`
+                : "http://127.0.0.1:8000/api/auth/employees/";
+
+            const method = editingId ? "PATCH" : "POST";
+
+            const body = editingId
+                ? {
+                    name,
+                    salary: Number(salary),
+                }
+                : {
+                    name,
+                    password,
+                    salary: Number(salary),
+                };
+
+            const response = await fetch(url, {
+                method,
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    name: name,
-                    password: password,
-                    salary: Number(salary)
-                })
+                body: JSON.stringify(body),
             });
 
             if (response.ok) {
                 await fetchEmployees();
+
+                setEditingId(null);
                 setName("");
                 setPassword("");
                 setSalary("");
             } else {
                 const data = await response.json();
-                setError(Object.values(data).flat().join(" ") || "Failed to add employee");
+                setError(
+                    Object.values(data).flat().join(" ") ||
+                    `Failed to ${editingId ? "update" : "add"} employee`
+                );
             }
         } catch (err) {
             setError("Network error. Please try again.");
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleEdit = (emp) => {
+        setEditingId(emp.id);
+        setName(emp.name);
+        setSalary(emp.salary);
     };
 
     const handleDelete = async (id) => {
@@ -163,7 +191,7 @@ export default function Employees() {
                 {/* Form */}
                 <div className="mt-8 bg-white/5 p-6 rounded-3xl border border-white/10">
                     <h2 className="text-2xl font-semibold mb-5">
-                        Add New Employee
+                        {editingId ? "Edit Employee" : "Add New Employee"}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="grid md:grid-cols-4 gap-4">
@@ -178,13 +206,15 @@ export default function Employees() {
                             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
                         </div>
 
-                        <input
-                            type="text"
-                            placeholder="Set Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="bg-slate-900 rounded-xl p-3 outline-none border border-transparent focus:border-amber-500"
-                        />
+                        {!editingId && (
+                            <input
+                                type="text"
+                                placeholder="Set Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="bg-slate-900 rounded-xl p-3 outline-none border border-transparent focus:border-amber-500"
+                            />
+                        )}
 
                         <input
                             type="number"
@@ -200,8 +230,28 @@ export default function Employees() {
                             className="bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl p-3 flex justify-center items-center gap-2 disabled:opacity-50"
                         >
                             <Plus size={18} />
-                            {isLoading ? "Adding..." : "Add Employee"}
+                            {isLoading
+                                ? editingId
+                                ? "Updating..."
+                                : "Adding..."
+                                : editingId
+                                ? "Update Employee"
+                                : "Add Employee"}
                         </button>
+                        {editingId && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setEditingId(null);
+                                    setName("");
+                                    setPassword("");
+                                    setSalary("");
+                                }}
+                                className="bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl p-3"
+                            >
+                                Cancel
+                            </button>
+                        )}
                     </form>
                 </div>
 
@@ -242,12 +292,19 @@ export default function Employees() {
                                             <td className="p-4">
                                                 <div className="flex justify-center">
                                                     <button
+                                                        onClick={() => handleEdit(employee)}
+                                                        className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30"
+                                                        title="Delete Employee"
+                                                    >
+                                                        <Pencil size={18} />
+                                                    </button>
+                                                    <button
                                                         onClick={() => handleDelete(employee.id)}
                                                         className="p-2 text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 transition"
                                                         title="Delete Employee"
                                                     >
                                                         <Trash2 size={18} />
-                                                    </button>
+                                                    </button>  
                                                 </div>
                                             </td>
                                         </tr>

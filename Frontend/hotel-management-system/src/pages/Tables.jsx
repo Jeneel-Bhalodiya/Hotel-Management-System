@@ -6,6 +6,7 @@ import LogoutButton from "../components/LogoutButton";
 
 export default function Tables() {
     const [tables, setTables] = useState([]);
+    const [tableNumber, setTableNumber] = useState("")
     const [capacity, setCapacity] = useState("");
     const [editingId, setEditingId] = useState(null);
     const [error, setError] = useState("");
@@ -63,9 +64,33 @@ export default function Tables() {
 
     const handleEdit = (table) => {
         setEditingId(table.id);
+        setTableNumber(table.table_number);
         setCapacity(table.capacity);
-        setError("");
     };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this table?")) return;
+        
+        try {
+            const token = localStorage.getItem("access_token");
+            const response = await fetch(`http://127.0.0.1:8000/api/auth/tables/${id}/`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                setTables(tables.filter((tables) => table.id !== id));
+            } else {
+                alert("Failed to delete table");
+            }
+        } catch (error) {
+            console.error("Failed to delete table", error);
+        }
+    };
+
+    
 
     return (
         <div className="min-h-screen bg-slate-950 text-white flex">
@@ -103,42 +128,83 @@ export default function Tables() {
                 </div>
 
                 {/* Form */}
-                {editingId && (
-                    <div className="mt-8 bg-white/10 p-6 rounded-3xl">
-                        <h2 className="text-2xl font-semibold mb-5">Edit Table Capacity</h2>
-                        <form onSubmit={handleSubmit} className="flex gap-6 items-center">
-                            <div className="flex-1">
-                                <label className="block text-sm text-slate-400 mb-2">New Capacity (Persons)</label>
+                <div className="mt-8 bg-white/10 p-6 rounded-3xl">
+                    <h2 className="text-2xl font-semibold mb-5">
+                        {editingId ? "Edit Table" : "Add Table"}
+                    </h2>
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            {/* Table Number */}
+                            <div>
+                                <label className="block text-sm text-slate-400 mb-2">
+                                    Table Number
+                                </label>
+
+                                <input
+                                    type="number"
+                                    value={tableNumber}
+                                    onChange={(e) => setTableNumber(e.target.value)}
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 outline-none focus:border-amber-500"
+                                    placeholder="Enter Table Number"
+                                />
+                            </div>
+
+                            {/* Capacity */}
+                            <div>
+                                <label className="block text-sm text-slate-400 mb-2">
+                                    Capacity
+                                </label>
+
                                 <input
                                     type="number"
                                     value={capacity}
                                     onChange={(e) => setCapacity(e.target.value)}
-                                    className="bg-slate-900 rounded-xl p-3 outline-none w-full border border-transparent focus:border-amber-500"
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 outline-none focus:border-amber-500"
+                                    placeholder="Enter Capacity"
                                 />
-                                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
                             </div>
+                        </div>
+                        <div className="flex gap-4 mt-6">
                             <button
                                 type="submit"
-                                className="bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl px-8 py-3 h-[52px] self-end"
+                                className="bg-amber-500 hover:bg-amber-400 text-black font-bold px-6 py-3 rounded-xl"
                             >
-                                Update Table
+                                {editingId ? "Update Table" : "Add Table"}
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => setEditingId(null)}
-                                className="bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl px-8 py-3 h-[52px] self-end"
-                            >
-                                Cancel
-                            </button>
-                        </form>
-                    </div>
-                )}
+                            <div className="flex gap-4 mt-6">
+                                {editingId && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditingId(null);
+                                            setTableNumber("");
+                                            setCapacity("");
+                                        }}
+                                        className="bg-slate-700 hover:bg-slate-600 px-6 py-3 rounded-xl"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </form>
+                </div>              
 
                 {/* Table List */}
                 <div className="mt-8 bg-slate-900 rounded-3xl overflow-hidden border border-slate-800">
-                    <div className="p-6 border-b border-slate-800">
-                        <h3 className="text-xl font-bold">All Tables</h3>
-                        <p className="text-slate-400 text-sm mt-1">Tables are automatically created based on your Hotel Setup. You can update their seating capacity here.</p>
+                    <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+                        <div>
+                            <h3 className="text-xl font-bold">
+                                All Tables
+                            </h3>
+
+                            <p className="text-slate-400 text-sm mt-1">
+                                Tables are automatically created based on your Hotel Setup.
+                                You can update their seating capacity here.
+                            </p>
+                        </div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full">
@@ -169,6 +235,12 @@ export default function Tables() {
                                                     className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30"
                                                 >
                                                     <Pencil size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(table)}
+                                                    className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30"
+                                                >
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </td>
